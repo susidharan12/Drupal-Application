@@ -1,0 +1,45 @@
+services:
+  drupal:
+    build: .
+    container_name: drupal_app
+    ports:
+      - "8080:80"
+    volumes:
+      - drupal_data:/var/www/html
+      - ./Drupal/modules/custom:/var/www/html/modules/custom
+      - ./Drupal/themes/custom:/var/www/html/themes/custom
+    environment:
+      DRUPAL_DB_HOST: db
+      DRUPAL_DB_NAME: drupal
+      DRUPAL_DB_USER: drupal
+      DRUPAL_DB_PASSWORD: drupalpass
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16
+    container_name: drupal_db
+    environment:
+      POSTGRES_DB: drupal
+      POSTGRES_USER: drupal
+      POSTGRES_PASSWORD: drupalpass
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: drupal_pgadmin
+    ports:
+      - "8082:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  drupal_data:
+  db_data:

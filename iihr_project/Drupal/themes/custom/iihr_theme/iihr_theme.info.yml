@@ -1,0 +1,19 @@
+name: IIHR Theme
+type: theme
+base theme: false
+core_version_requirement: ^10 || ^11
+libraries:
+  - iihr_theme/global
+regions:
+  top_bar: Top Bar
+  header: Header
+  navigation: Navigation
+  ticker: Ticker
+  hero: Hero
+  sidebar_first: Sidebar First
+  content: Content
+  sidebar_second: Sidebar Second
+  spotlight: Spotlight
+  research: Research
+  partners: Partners
+  footer: Footer

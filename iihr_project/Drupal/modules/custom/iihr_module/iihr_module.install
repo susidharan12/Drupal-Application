@@ -1,0 +1,344 @@
+<?php
+
+/**
+ * @file
+ * Creates ALL content types needed to manage the IIHR website from Drupal admin.
+ *
+ * Content types:
+ *  1. iihr_site_config   — Site title, address, phone, email, spotlight text
+ *  2. iihr_quick_link    — Quick links sidebar items
+ *  3. iihr_slide         — Hero banner slides
+ *  4. iihr_ticker        — Scrolling ticker messages
+ *  5. iihr_news          — News & Announcements
+ *  6. iihr_event         — Upcoming Events
+ *  7. iihr_director      — Director card
+ *  8. iihr_spotlight     — Spotlight grid images
+ *  9. iihr_research_prog — Research programme circles
+ * 10. iihr_partner       — Partner / collaborator logos
+ */
+
+use Drupal\node\Entity\NodeType;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+
+/**
+ * Implements hook_install().
+ */
+function iihr_module_install() {
+  _iihr_create_site_config_type();
+  _iihr_create_quick_link_type();
+  _iihr_create_slide_type();
+  _iihr_create_ticker_type();
+  _iihr_create_news_type();
+  _iihr_create_event_type();
+  _iihr_create_director_type();
+  _iihr_create_spotlight_type();
+  _iihr_create_research_prog_type();
+  _iihr_create_partner_type();
+
+  \Drupal::messenger()->addMessage(
+    t('IIHR: All 10 content types created. Visit /admin/content to start adding content.')
+  );
+}
+
+function iihr_module_uninstall() {
+  \Drupal::messenger()->addMessage(
+    t('IIHR Module uninstalled. All content and content types are preserved.')
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REUSABLE HELPERS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * Creates a NodeType if it does not already exist.
+ */
+function _iihr_node_type($machine_name, $label, $description) {
+  if (!NodeType::load($machine_name)) {
+    NodeType::create([
+      'type'        => $machine_name,
+      'name'        => $label,
+      'description' => $description,
+    ])->save();
+  }
+}
+
+/**
+ * Creates FieldStorage + FieldConfig for a node field if they don't exist.
+ */
+function _iihr_field($bundle, $field_name, $field_type, $label,
+                     $storage_settings = [], $config_settings = [], $required = FALSE) {
+  if (!FieldStorageConfig::loadByName('node', $field_name)) {
+    $def = [
+      'field_name'  => $field_name,
+      'entity_type' => 'node',
+      'type'        => $field_type,
+    ];
+    if ($storage_settings) {
+      $def['settings'] = $storage_settings;
+    }
+    FieldStorageConfig::create($def)->save();
+  }
+  if (!FieldConfig::loadByName('node', $bundle, $field_name)) {
+    $def = [
+      'field_name'  => $field_name,
+      'entity_type' => 'node',
+      'bundle'      => $bundle,
+      'label'       => $label,
+      'required'    => $required,
+    ];
+    if ($config_settings) {
+      $def['settings'] = $config_settings;
+    }
+    FieldConfig::create($def)->save();
+  }
+}
+
+/**
+ * Registers fields in the node's default form display.
+ * $fields = [ ['name' => 'field_x', 'widget' => 'widget_id'], ... ]
+ */
+function _iihr_form_display($bundle, array $fields) {
+  $id      = "node.{$bundle}.default";
+  $display = EntityFormDisplay::load($id);
+  if (!$display) {
+    $display = EntityFormDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle'           => $bundle,
+      'mode'             => 'default',
+      'status'           => TRUE,
+    ]);
+  }
+  foreach ($fields as $w => $f) {
+    $display->setComponent($f['name'], ['type' => $f['widget'], 'weight' => $w + 1]);
+  }
+  $display->save();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. iihr_site_config — Site-wide header / footer settings
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_site_config_type() {
+  _iihr_node_type('iihr_site_config', 'IIHR Site Configuration',
+    'One node only. Controls header title, address, phone, email and spotlight intro text.');
+
+  _iihr_field('iihr_site_config', 'field_sc_kannada_title',   'string', 'Kannada Title',
+    ['max_length' => 500]);
+  _iihr_field('iihr_site_config', 'field_sc_hindi_title',     'string', 'Hindi Title',
+    ['max_length' => 500]);
+  _iihr_field('iihr_site_config', 'field_sc_address',         'string_long', 'Address / Location');
+  _iihr_field('iihr_site_config', 'field_sc_phone',           'string', 'Phone Number',
+    ['max_length' => 50]);
+  _iihr_field('iihr_site_config', 'field_sc_email',           'string', 'Email Address',
+    ['max_length' => 100]);
+  _iihr_field('iihr_site_config', 'field_sc_ministry_text',   'string', 'Ministry Text (top bar)',
+    ['max_length' => 255]);
+  _iihr_field('iihr_site_config', 'field_sc_spotlight_title', 'string', 'Spotlight Box Title',
+    ['max_length' => 100]);
+  _iihr_field('iihr_site_config', 'field_sc_spotlight_text',  'string_long', 'Spotlight Box Description');
+  _iihr_field('iihr_site_config', 'field_sc_copyright',       'string', 'Footer Copyright Text',
+    ['max_length' => 255]);
+
+  _iihr_form_display('iihr_site_config', [
+    ['name' => 'field_sc_kannada_title',   'widget' => 'string_textfield'],
+    ['name' => 'field_sc_hindi_title',     'widget' => 'string_textfield'],
+    ['name' => 'field_sc_address',         'widget' => 'string_textarea'],
+    ['name' => 'field_sc_phone',           'widget' => 'string_textfield'],
+    ['name' => 'field_sc_email',           'widget' => 'string_textfield'],
+    ['name' => 'field_sc_ministry_text',   'widget' => 'string_textfield'],
+    ['name' => 'field_sc_spotlight_title', 'widget' => 'string_textfield'],
+    ['name' => 'field_sc_spotlight_text',  'widget' => 'string_textarea'],
+    ['name' => 'field_sc_copyright',       'widget' => 'string_textfield'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. iihr_quick_link — Quick Links sidebar
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_quick_link_type() {
+  _iihr_node_type('iihr_quick_link', 'IIHR Quick Link',
+    'Sidebar quick link box. Title = label. Set icon URL and destination link.');
+
+  _iihr_field('iihr_quick_link', 'field_ql_icon_url',  'string',  'Icon Image URL (icons8)',
+    ['max_length' => 500]);
+  _iihr_field('iihr_quick_link', 'field_ql_link_url',  'string',  'Destination URL',
+    ['max_length' => 500]);
+  _iihr_field('iihr_quick_link', 'field_ql_weight',    'integer', 'Sort Order (lower = first)');
+
+  _iihr_form_display('iihr_quick_link', [
+    ['name' => 'field_ql_icon_url', 'widget' => 'string_textfield'],
+    ['name' => 'field_ql_link_url', 'widget' => 'string_textfield'],
+    ['name' => 'field_ql_weight',   'widget' => 'number'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. iihr_slide — Hero Banner Slides
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_slide_type() {
+  _iihr_node_type('iihr_slide', 'IIHR Hero Slide',
+    'Full-width homepage hero slides. Title = headline text.');
+
+  _iihr_field('iihr_slide', 'field_slide_image',    'image',  'Slide Image', [],
+    ['file_extensions' => 'jpg jpeg png webp gif', 'alt_field' => TRUE, 'alt_field_required' => FALSE, 'title_field' => FALSE]);
+  _iihr_field('iihr_slide', 'field_slide_tag',      'string', 'Tag Badge Text',      ['max_length' => 100]);
+  _iihr_field('iihr_slide', 'field_slide_subtitle', 'string', 'Subtitle',            ['max_length' => 255]);
+  _iihr_field('iihr_slide', 'field_slide_hash',     'string', 'Hashtag',             ['max_length' => 100]);
+
+  _iihr_form_display('iihr_slide', [
+    ['name' => 'field_slide_image',    'widget' => 'image_image'],
+    ['name' => 'field_slide_tag',      'widget' => 'string_textfield'],
+    ['name' => 'field_slide_subtitle', 'widget' => 'string_textfield'],
+    ['name' => 'field_slide_hash',     'widget' => 'string_textfield'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. iihr_ticker — Scrolling Ticker (Title = message text)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_ticker_type() {
+  _iihr_node_type('iihr_ticker', 'IIHR Ticker Item',
+    'One scrolling message in the "WHATS NEW?" bar. The Title field IS the message.');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. iihr_news — News & Announcements
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_news_type() {
+  _iihr_node_type('iihr_news', 'IIHR News & Announcement',
+    'Homepage center column. Title = headline. News Date = display date.');
+
+  _iihr_field('iihr_news', 'field_news_date', 'datetime', 'News Date',
+    ['datetime_type' => 'date']);
+
+  _iihr_form_display('iihr_news', [
+    ['name' => 'field_news_date', 'widget' => 'datetime_datelist'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   6. iihr_event — Upcoming Events
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_event_type() {
+  _iihr_node_type('iihr_event', 'IIHR Event',
+    'Homepage right column events. Title = event name. Pick date and category.');
+
+  _iihr_field('iihr_event', 'field_event_date', 'datetime', 'Event Date',
+    ['datetime_type' => 'date'], [], TRUE);
+
+  if (!FieldStorageConfig::loadByName('node', 'field_event_category')) {
+    FieldStorageConfig::create([
+      'field_name'  => 'field_event_category',
+      'entity_type' => 'node',
+      'type'        => 'list_string',
+      'settings'    => [
+        'allowed_values' => [
+          'funding'    => 'Funding',
+          'training'   => 'Training',
+          'workshop'   => 'Workshop',
+          'seminar'    => 'Seminar',
+          'conference' => 'Conference',
+          'other'      => 'Other',
+        ],
+      ],
+    ])->save();
+  }
+  if (!FieldConfig::loadByName('node', 'iihr_event', 'field_event_category')) {
+    FieldConfig::create([
+      'field_name'  => 'field_event_category',
+      'entity_type' => 'node',
+      'bundle'      => 'iihr_event',
+      'label'       => 'Category',
+      'required'    => FALSE,
+    ])->save();
+  }
+
+  _iihr_form_display('iihr_event', [
+    ['name' => 'field_event_date',     'widget' => 'datetime_datelist'],
+    ['name' => 'field_event_category', 'widget' => 'options_select'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   7. iihr_director — Director Card
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_director_type() {
+  _iihr_node_type('iihr_director', 'IIHR Director',
+    'Homepage director card. Title = director full name.');
+
+  _iihr_field('iihr_director', 'field_director_photo', 'image', 'Director Photo', [],
+    ['file_extensions' => 'jpg jpeg png webp', 'alt_field' => TRUE, 'alt_field_required' => FALSE, 'title_field' => FALSE]);
+
+  _iihr_form_display('iihr_director', [
+    ['name' => 'field_director_photo', 'widget' => 'image_image'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   8. iihr_spotlight — Spotlight Grid Items
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_spotlight_type() {
+  _iihr_node_type('iihr_spotlight', 'IIHR Spotlight Item',
+    'Spotlight grid on the homepage. Title = box heading. Upload image. Check "Featured" for the big box with description.');
+
+  _iihr_field('iihr_spotlight', 'field_sp_image',       'image',   'Image', [],
+    ['file_extensions' => 'jpg jpeg png webp', 'alt_field' => TRUE, 'alt_field_required' => FALSE, 'title_field' => FALSE]);
+  _iihr_field('iihr_spotlight', 'field_sp_description', 'string_long', 'Description (shown on featured box)');
+  _iihr_field('iihr_spotlight', 'field_sp_link_url',    'string',  'Link URL', ['max_length' => 500]);
+  _iihr_field('iihr_spotlight', 'field_sp_featured',    'boolean', 'Is Featured Box (big overlay with description)?');
+  _iihr_field('iihr_spotlight', 'field_sp_weight',      'integer', 'Sort Order (lower = first, 1–7)');
+
+  _iihr_form_display('iihr_spotlight', [
+    ['name' => 'field_sp_image',       'widget' => 'image_image'],
+    ['name' => 'field_sp_description', 'widget' => 'string_textarea'],
+    ['name' => 'field_sp_link_url',    'widget' => 'string_textfield'],
+    ['name' => 'field_sp_featured',    'widget' => 'boolean_checkbox'],
+    ['name' => 'field_sp_weight',      'widget' => 'number'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   9. iihr_research_prog — Research Programme Circles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_research_prog_type() {
+  _iihr_node_type('iihr_research_prog', 'IIHR Research Programme',
+    'Circular image + title shown in the Research Programmes section. Title = programme description.');
+
+  _iihr_field('iihr_research_prog', 'field_rp_image',  'image',   'Programme Image', [],
+    ['file_extensions' => 'jpg jpeg png webp', 'alt_field' => TRUE, 'alt_field_required' => FALSE, 'title_field' => FALSE]);
+  _iihr_field('iihr_research_prog', 'field_rp_weight', 'integer', 'Sort Order (lower = first)');
+
+  _iihr_form_display('iihr_research_prog', [
+    ['name' => 'field_rp_image',  'widget' => 'image_image'],
+    ['name' => 'field_rp_weight', 'widget' => 'number'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   10. iihr_partner — Partner / Collaborator Logos
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_partner_type() {
+  _iihr_node_type('iihr_partner', 'IIHR Partner Logo',
+    'Partner logos shown in the strip above the footer. Title = partner/organisation name.');
+
+  _iihr_field('iihr_partner', 'field_partner_logo',   'image',   'Partner Logo', [],
+    ['file_extensions' => 'jpg jpeg png webp svg', 'alt_field' => TRUE, 'alt_field_required' => FALSE, 'title_field' => FALSE]);
+  _iihr_field('iihr_partner', 'field_partner_weight', 'integer', 'Sort Order (lower = first)');
+
+  _iihr_form_display('iihr_partner', [
+    ['name' => 'field_partner_logo',   'widget' => 'image_image'],
+    ['name' => 'field_partner_weight', 'widget' => 'number'],
+  ]);
+}

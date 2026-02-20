@@ -1,0 +1,17 @@
+<div class="hero-slide">
+  <div class="hero-bg-image">{{ content.field_field_slide_image }}</div>
+  <div class="hero-overlay">
+    <div class="hero-text">
+      {% if node.field_slide_tag.value %}
+        <span class="hero-tag">{{ node.field_slide_tag.value }}</span>
+      {% endif %}
+      <h2>{{ node.title.value }}</h2>
+      {% if node.field_slide_subtitle.value %}
+        <p>{{ node.field_slide_subtitle.value }}</p>
+      {% endif %}
+      {% if node.field_slide_hash.value %}
+        <div class="hero-hash">{{ node.field_slide_hash.value }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>

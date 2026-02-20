@@ -1,0 +1,5 @@
+name: 'IIHR Module'
+type: module
+description: 'HTMX-powered frontend module for ICAR-IIHR website.'
+core_version_requirement: ^11
+package: Custom

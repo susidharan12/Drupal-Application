@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function iihr_module_theme($existing, $type, $theme, $path) {
+  return [
+    'iihr_home' => [
+      'template'  => 'iihr-home',
+      'variables' => [
+        'site_config'     => [],   // header titles, address, phone, email, spotlight text
+        'hero_slides'     => [],   // [['title','tag','subtitle','hash','image_url'], ...]
+        'ticker_items'    => [],   // ['message1', 'message2', ...]
+        'quick_links'     => [],   // [['title','icon_url','link_url'], ...]
+        'news_items'      => [],   // [['title','url','date'], ...]
+        'events'          => [],   // [['title','url','month','day','category','category_label'], ...]
+        'director'        => [],   // ['name','image_url','url']
+        'spotlight_items' => [],   // [['title','image_url','description','link_url','featured'], ...]
+        'research_items'  => [],   // [['title','image_url'], ...]
+        'partner_logos'   => [],   // [['name','image_url'], ...]
+      ],
+    ],
+    'iihr_about' => [
+      'template'  => 'iihr-about',
+      'variables' => [
+        'ticker_items' => [],
+        'site_config'  => [],
+      ],
+    ],
+  ];
+}

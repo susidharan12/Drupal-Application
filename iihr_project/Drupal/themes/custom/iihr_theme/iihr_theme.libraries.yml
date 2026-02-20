@@ -1,0 +1,7 @@
+global:
+  version: 1.0
+  css:
+    theme:
+      css/iihr.css: {}
+  js:
+    js/iihr.js: {}

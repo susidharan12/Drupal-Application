@@ -1,0 +1,282 @@
+{# IIHR About Page Template #}
+<div class="htmx-indicator" id="htmx-indicator"></div>
+<div class="page-wrap" id="page-wrap">
+
+{# TOP BAR #}
+<div class="tb">
+  <div class="tb-l">
+    <span class="ministry-text">{{ site_config.ministry_text ?: 'Ministry of Agriculture and Farmers Welfare | Government of India' }}</span>
+  </div>
+  <div class="tb-r">
+    <a href="#main-content">Skip to Main Content</a>
+    <span style="color:#888">|</span>
+    <span style="color:#555">Screen Reader Compatibility</span>
+    <div class="acc">
+      <a href="#">A-</a><a href="#">A</a><a href="#" style="background:#eee">A+</a>
+      <a href="#" class="inv">A</a><a href="#" class="yel">A</a>
+    </div>
+    <span style="color:#888">|</span>
+    <div class="lang-btn">
+      <img src="https://img.icons8.com/ios-glyphs/30/ffffff/globe--v1.png" alt=""> English ▾
+    </div>
+  </div>
+</div>
+
+{# HEADER #}
+<header class="hdr">
+  <div class="hdr-logo-area">
+    <img src="/themes/custom/iihr_theme/images/logo2.png" alt="Logo" style="height:70px;width:auto;margin-right:12px">
+    <img src="/themes/custom/iihr_theme/images/logo.png" alt="IIHR Logo" onerror="this.style.display='none'">
+    <div class="hdr-titles">
+      <div class="ln1">ಭಾ.ಕೃ.ಅ.ಪ - ಭಾರತೀಯ ತೋಟಗಾರಿಕೆ ಸಂಶೋಧನಾ ಸಂಸ್ಥೆ | आई.सी.ए.आर - भारतीय बागवानी अनुसंधान संस्थान</div>
+      <div class="ln2">ICAR - Indian Institute of Horticulture Research</div>
+      <div class="ln3">Hesaraghatta Lake Post, Bengaluru-560 089</div>
+    </div>
+  </div>
+  <div class="hdr-search">
+    <input type="text" placeholder="Search" name="q" aria-label="Search">
+    <button type="button"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/search--v1.png" alt="Search"></button>
+  </div>
+</header>
+
+{# NAVIGATION #}
+<nav class="nav" role="navigation" aria-label="Main Navigation">
+  <a href="/home"
+     hx-get="/home"
+     hx-target="#page-wrap"
+     hx-select="#page-wrap"
+     hx-swap="outerHTML"
+     hx-push-url="true"
+     hx-indicator="#htmx-indicator">Home</a>
+
+  <div class="nd">
+    <div class="nd-trigger nav-active"
+         hx-get="/about"
+         hx-target="#page-wrap"
+         hx-select="#page-wrap"
+         hx-swap="outerHTML"
+         hx-push-url="true"
+         hx-indicator="#htmx-indicator">About IIHR ▾</div>
+    <div class="nd-menu">
+      <a href="/about" hx-get="/about" hx-target="#page-wrap" hx-select="#page-wrap" hx-swap="outerHTML" hx-push-url="true" hx-indicator="#htmx-indicator" class="active">About Us</a>
+      <a href="#">Organization Structure</a>
+      <a href="#">Management</a>
+      <a href="#">Related Links</a>
+      <a href="#">Director</a>
+      <a href="#">Past Directors</a>
+      <a href="#">Child Organizations</a>
+      <a href="#">Staff</a>
+    </div>
+  </div>
+
+  <div class="nd"><div class="nd-trigger">Divisions ▾</div>
+    <div class="nd-menu">
+      <a href="#">Fruit Crops</a><a href="#">Vegetable Crops</a>
+      <a href="#">Flower and Medicinal Crops</a><a href="#">Post Harvest Technology</a>
+      <a href="#">Crop Protection</a><a href="#">Natural Resources</a>
+      <a href="#">Basic Sciences</a><a href="#">Social Sciences and Training</a>
+    </div>
+  </div>
+  <div class="nd"><div class="nd-trigger">Research ▾</div></div>
+  <div class="nd"><div class="nd-trigger">Farmers Zone ▾</div></div>
+  <div class="nd"><div class="nd-trigger">Services ▾</div></div>
+  <div class="nd"><div class="nd-trigger">Resources ▾</div></div>
+  <a href="#">Tenders</a>
+  <a href="#">Recruitment</a>
+  <a href="#">Events</a>
+  <a href="#">Contact Us</a>
+</nav>
+
+{# TICKER — dynamic from iihr_ticker content type #}
+<div class="tkr">
+  <div class="tkr-lbl">WHATS NEW ?</div>
+  <div class="tkr-wrap">
+    <div class="tkr-inner">
+      {% if ticker_items %}
+        {% for item in ticker_items %}
+          <span>{{ item }}</span>
+        {% endfor %}
+      {% else %}
+        <span>Welcome to ICAR-IIHR — Indian Institute of Horticulture Research, Bengaluru</span>
+        <span>Advancing horticulture research for a sustainable future</span>
+      {% endif %}
+    </div>
+  </div>
+  <div style="display:flex;gap:15px;padding:0 15px;flex-shrink:0">
+    <a href="#" style="color:var(--gold);font-size:12px;font-weight:700">Read Now</a>
+    <a href="#" style="color:var(--gold);font-size:12px;font-weight:700">See Now</a>
+  </div>
+</div>
+
+{# PAGE HERO BANNER #}
+<div class="page-hero">
+  <div class="page-hero-content">
+    <h1>About IIHR</h1>
+    <div class="breadcrumb">
+      <a href="/home" hx-get="/home" hx-target="#page-wrap" hx-select="#page-wrap" hx-swap="outerHTML" hx-push-url="true" hx-indicator="#htmx-indicator">Home</a>
+      <span>›</span>
+      <span>About</span>
+      <span>›</span>
+      <span>About IIHR</span>
+    </div>
+  </div>
+</div>
+
+{# MAIN ABOUT LAYOUT #}
+<div class="about-layout" id="main-content">
+
+  {# SIDEBAR #}
+  <aside>
+    <div class="about-sidebar">
+      <div class="side-nav">
+        <a href="#" class="active">About Us <span>›</span></a>
+        <a href="#">Organization Structure <span>›</span></a>
+        <a href="#">Management <span>›</span></a>
+        <a href="#">Director <span>›</span></a>
+        <a href="#">Past Directors <span>›</span></a>
+        <a href="#">Child Organizations <span>›</span></a>
+        <a href="#">Staff <span>›</span></a>
+      </div>
+    </div>
+  </aside>
+
+  {# ABOUT CONTENT #}
+  <div class="about-content">
+
+    <div class="intro-section">
+      <div class="intro-text">
+        <h2>Introduction to IIHR</h2>
+        <p>The Institute spread its sphere of Research activities to the length and breadth of the Nation by establishing its experimental stations at Lucknow, Nagpur, Ranchi, Godhra, Chettalli and Gonikopal. Over the years these experiment stations have grown in size and today they stand as independent institutes, however, retaining the Chettalli and Gonicoppal under its fold.</p>
+        <p>As of now, the IIHR has its main research station at Hessaraghatta, Bengaluru with 263 ha of land and Regional experiment station at Bhuvaneshwar in Orissa with two Krishi Vigyan Kendras both located in Karnataka state at Gonikopal in Kodagu and Hirehalli in Tumkur districts.</p>
+      </div>
+      <img src="/themes/custom/iihr_theme/images/iihr.jpg" alt="IIHR Campus" class="intro-img">
+    </div>
+
+    <h3>History and Growth</h3>
+    <p>The physical growth of the Institute could be viewed in two phases. The first phase is from 1970 to 1990, wherein emphases were laid on land development and buildings. During this phase, the area for carrying out research and the area for laboratory buildings, supporting buildings and other essential office buildings was earmarked. Accordingly, the entire arable land was divided into well-defined nine blocks for carrying out research and independent buildings for various divisions and departments with laboratories were built.</p>
+
+    <p>The second phase of the physical growth was after 1990 during which emphases was laid on creating ultra-modern world class infrastructure facilities in terms of equipment and structures. Currently the institute has well defined 8 divisions namely, The Division of Fruit Crops, Division of Vegetable Crops, Division of Flower and Medicinal Crops, Division of Post Harvest Technology and Agricultural Engineering, Division of Crop Protection, Division of Natural Resources, Division of Basic Sciences and Division of Social Sciences and Training with more than 65 purpose oriented laboratories having state of art equipment like electron microscope, ultra-centrifuge, LC-MS, GC-MS, GC-EAD, AAS, ICP-OES, SEM, TEM, HPLC, GLC, FT-NIR, Gama Chamber etc.</p>
+
+    <h3>Core of IIHR</h3>
+    <p>The Institute has also an Agriculture Technology Information Centre (ATIC), which is a single window agency for dissemination of information and technologies developed by the Institute. All the technological products and popular publications developed by the Institute are sold to the farmers and interested public through the agricultural technology information centre.</p>
+
+    <p>The main strength of the institute is excellent well-trained human resources. Presently the Institute has a total cadre strength of 714 staff with 150 Scientists, 226 technical staff, 83 Administrative staff and 145 supporting staff.</p>
+
+    <h3>The Mandate</h3>
+    <div class="mandate-grid">
+      <div class="mandate-card">
+        <div class="icon"><img src="https://img.icons8.com/ios-filled/40/000000/microscope.png" alt="" style="width:28px;height:28px"></div>
+        <p>To Undertake Basic And Applied Research For Developing Strategies To Enhance Productivity And Utilization Of Tropical And Sub-Tropical Horticulture Crops Viz., Fruits, Vegetables, Ornamentals, Medicinal And Aromatic Plants And Mushrooms.</p>
+      </div>
+      <div class="mandate-card">
+        <div class="icon"><img src="https://img.icons8.com/ios-filled/40/000000/book.png" alt="" style="width:28px;height:28px"></div>
+        <p>To Serve As A Repository Of Scientific Information Relevant To Horticulture.</p>
+      </div>
+      <div class="mandate-card">
+        <div class="icon"><img src="https://img.icons8.com/ios-filled/40/000000/graduation-cap.png" alt="" style="width:28px;height:28px"></div>
+        <p>To Act As A Centre For Training For Up Gradation Of Scientific Manpower In Modern Technologies For Horticulture Production.</p>
+      </div>
+      <div class="mandate-card">
+        <div class="icon"><img src="https://img.icons8.com/ios-filled/40/000000/handshake.png" alt="" style="width:28px;height:28px"></div>
+        <p>To Collaborate With National And International Agencies In Achieving The Above Objectives.</p>
+      </div>
+    </div>
+
+    <br>
+    <p style="font-size:13px;color:#666;font-style:italic">Twice, i.e. during the year 1999 and 2011, the Indian Council of Agricultural Research, New Delhi awarded the Best Institute Award to IIHR, Bangalore in recognition of institute's progress, achievements, and its contribution to the field of horticulture.</p>
+
+  </div>
+</div>
+
+{# PARTNER LOGOS #}
+<div class="partner-logos">
+  <div class="partner-logos-inner">
+    <img src="/themes/custom/iihr_theme/images/logo1.png" alt="Partner 1">
+    <img src="/themes/custom/iihr_theme/images/logo2.png" alt="Partner 2">
+    <img src="/themes/custom/iihr_theme/images/logo3.png" alt="Partner 3">
+    <img src="/themes/custom/iihr_theme/images/logo4.png" alt="Partner 4">
+    <img src="/themes/custom/iihr_theme/images/logo5.png" alt="Partner 5">
+  </div>
+</div>
+
+{# FOOTER #}
+<footer class="footer" role="contentinfo">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-logo">
+        <img src="/themes/custom/iihr_theme/images/logo.png" alt="IIHR" onerror="this.style.display='none'">
+      </div>
+      <p class="footer-addr">ICAR - IIHR<br>Hessaraghatta Lake Post,<br>Bengaluru-560 089</p>
+      <a href="#" style="color:var(--gold-light);font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;margin-bottom:12px"><img src="https://img.icons8.com/ios-filled/16/ffffff/marker.png" alt="" style="width:14px;height:14px"> View in Maps</a>
+      <p style="font-size:12px;color:rgba(255,255,255,0.72);margin-bottom:5px"><img src="https://img.icons8.com/ios-filled/16/ffffff/phone.png" alt="" style="width:14px;height:14px;display:inline;vertical-align:middle"> (080) 23086100</p>
+      <p style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:12px">iihrdirector[at]gmail[dot]com</p>
+      <div class="footer-socials">
+        <a href="#"><img src="https://img.icons8.com/color/48/facebook-new.png" alt="FB"></a>
+        <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/twitterx.png" alt="TW"></a>
+        <a href="#"><img src="https://img.icons8.com/color/48/youtube-play.png" alt="YT"></a>
+        <a href="#"><img src="https://img.icons8.com/color/48/linkedin.png" alt="LI"></a>
+      </div>
+      <a href="#" class="feedback-btn">Give Feedback</a>
+    </div>
+    <div class="footer-col">
+      <h4>Divisions</h4>
+      <a href="#">Fruit Crops</a><a href="#">Vegetable Crops</a>
+      <a href="#">Flower Crops</a><a href="#">Crop Protection</a>
+      <a href="#">Natural Resources</a><a href="#">Basic Sciences</a>
+      <a href="#">Social Science and Training</a>
+      <h4 class="mt">Services</h4>
+      <a href="#">Phytosanitary Testing Services</a>
+      <a href="#">NABL accredited Food Testing Lab</a>
+      <a href="#">Consulting</a><a href="#">Seed Testing</a>
+      <a href="#">Library</a><a href="#">PG Education</a>
+    </div>
+    <div class="footer-col">
+      <h4>Projects</h4>
+      <a href="#">AICRP</a><a href="#">NICRA</a>
+      <a href="#">Micronutrient Management</a>
+      <h4 class="mt">Farmers Zone</h4>
+      <a href="#">Technologies</a><a href="#">E-Info</a>
+      <a href="#">Agricultural Operations</a>
+      <a href="#">Success Stories</a><a href="#">Documentary</a>
+    </div>
+    <div class="footer-col">
+      <h4>About IIHR</h4>
+      <a href="/about" hx-get="/about" hx-target="#page-wrap" hx-select="#page-wrap" hx-swap="outerHTML" hx-push-url="true" hx-indicator="#htmx-indicator">About</a>
+      <a href="#">Management</a><a href="#">Divisions</a>
+      <a href="#">Director's Desk</a><a href="#">How to Reach</a>
+      <a href="#">Staff</a><a href="#">RTI</a>
+      <a href="#">Grievance</a><a href="#">Awards</a>
+    </div>
+    <div class="footer-col">
+      <h4>Media</h4>
+      <a href="#">Photo Gallery</a><a href="#">Video Gallery</a>
+      <a href="#">Events</a><a href="#">Media Kit</a>
+      <h4 class="mt">Other Links</h4>
+      <a href="#">Important Circulars</a>
+      <a href="#">Guest House</a>
+      <a href="#">KVK Hirehalli</a>
+      <a href="#">KVK Kodagu</a>
+      <a href="#">Telephone Directory</a>
+      <a href="#">IIHR Infonet</a>
+    </div>
+  </div>
+  <div style="max-width:1200px;margin:30px auto 0;padding:15px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:rgba(255,255,255,0.45);text-align:center;line-height:1.8">
+    This website belongs to Indian Institute of Horticultural Research, Indian Council of Agricultural Research, an autonomous organization under the Department of Agricultural Research and Education, Ministry of Agriculture &amp; Farmers Welfare, Government of India.
+  </div>
+  <div class="footer-bottom">
+    <span>Copyright © 2026 ICAR-IIHR, This site is Maintained by Agricultural Knowledge Management Unit</span>
+    <div class="footer-bottom-links">
+      <a href="#">Privacy Policy</a><span>|</span>
+      <a href="#">Cookies Policy</a><span>|</span>
+      <a href="#">Disclaimer</a><span>|</span>
+      <a href="#">Terms and Conditions</a><span>|</span>
+      <a href="#">Copyright Policy</a><span>|</span>
+      <a href="#">Sitemap</a>
+    </div>
+  </div>
+  <div style="max-width:1200px;margin:10px auto 0;text-align:right;font-size:11px;color:rgba(255,255,255,0.35)">
+    Designed with <img src="https://img.icons8.com/ios-filled/16/ff0000/like.png" alt="love" style="width:12px;height:12px;display:inline;vertical-align:middle"> by World Vision Softek
+  </div>
+</footer>
+
+</div>{# /.page-wrap #}

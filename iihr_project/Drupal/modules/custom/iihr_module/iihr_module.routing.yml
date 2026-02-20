@@ -1,0 +1,15 @@
+iihr_module.home:
+  path: '/home'
+  defaults:
+    _controller: '\Drupal\iihr_module\Controller\IihrController::home'
+    _title: 'Home'
+  requirements:
+    _access: 'TRUE'
+
+iihr_module.about:
+  path: '/about'
+  defaults:
+    _controller: '\Drupal\iihr_module\Controller\IihrController::about'
+    _title: 'About IIHR'
+  requirements:
+    _access: 'TRUE'
