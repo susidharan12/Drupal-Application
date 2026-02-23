@@ -1,5 +1,4 @@
-{# IIHR Home Page — Dynamic content via Drupal CMS #}
-{{ attach_library('iihr_theme/global') }}
+{# IIHR Division Page Template — Fruit Crops (and reusable for other divisions) #}
 <div class="htmx-indicator" id="htmx-indicator"></div>
 <div class="page-wrap" id="page-wrap">
 
@@ -30,6 +29,7 @@
 <header class="hdr">
   <div class="hdr-logo-area">
     <img src="/themes/custom/iihr_theme/images/logo2.png" alt="Logo" style="height:70px;width:auto;margin-right:12px">
+    <img src="/themes/custom/iihr_theme/images/logo.png" alt="IIHR Logo" onerror="this.style.display='none'">
     <div class="hdr-titles">
       <div class="ln1">{{ site_config.kannada_title }}</div>
       <div class="ln2">{{ site_config.english_title }}</div>
@@ -39,22 +39,21 @@
   <div class="hdr-right">
     <div class="ministry-text">{{ site_config.ministry_text }}</div>
     <div class="hdr-search">
-      <input type="text" placeholder="Search" name="q">
+      <input type="text" placeholder="Search" name="q" aria-label="Search">
       <button type="button"><img src="https://img.icons8.com/ios-glyphs/30/ffffff/search--v1.png" alt="Search"></button>
     </div>
   </div>
 </header>
 
-{# NAVIGATION #}
-<nav class="nav" role="navigation">
+{# NAVIGATION — Divisions marked as active #}
+<nav class="nav" role="navigation" aria-label="Main Navigation">
   <a href="/home"
      hx-get="/home"
      hx-target="#page-wrap"
      hx-select="#page-wrap"
      hx-swap="outerHTML"
      hx-push-url="true"
-     hx-indicator="#htmx-indicator"
-     class="nav-active">Home</a>
+     hx-indicator="#htmx-indicator">Home</a>
 
   <div class="nd">
     <div class="nd-trigger"
@@ -77,7 +76,7 @@
   </div>
 
   <div class="nd">
-    <div class="nd-trigger">Divisions ▾</div>
+    <div class="nd-trigger nav-active">Divisions ▾</div>
     <div class="nd-menu">
       <a href="/division/fruit-crops"
          hx-get="/division/fruit-crops"
@@ -85,7 +84,8 @@
          hx-select="#page-wrap"
          hx-swap="outerHTML"
          hx-push-url="true"
-         hx-indicator="#htmx-indicator">Fruit Crops</a>
+         hx-indicator="#htmx-indicator"
+         class="active">Fruit Crops</a>
       <a href="#">Vegetable Crops</a>
       <a href="#">Flower and Medicinal Crops</a>
       <a href="#">Post Harvest Technology</a>
@@ -165,239 +165,177 @@
   </div>
 </div>
 
-{# HERO SECTION — dynamic from iihr_slide content type #}
-<section class="hero" id="hero">
-  <div id="heroSlides" style="display:flex;transition:transform 0.5s ease;width:100%">
-    {% for slide in hero_slides %}
-    <div class="hero-slide" style="flex:0 0 100%;min-width:0;position:relative;overflow:hidden">
-      <img src="{{ slide.image_url }}" alt="{{ slide.title }}">
-      <div class="hero-overlay">
-        <div class="hero-text">
-          {% if slide.tag %}<span class="hero-tag">{{ slide.tag }}</span>{% endif %}
-          <h2>{{ slide.title }}</h2>
-          {% if slide.subtitle %}<p>{{ slide.subtitle }}</p>{% endif %}
-          {% if slide.hash %}<div class="hero-hash">{{ slide.hash }}</div>{% endif %}
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-  {% if hero_slides|length > 1 %}
-  <button class="hero-prev" onclick="heroSlide(-1)" aria-label="Previous slide">‹</button>
-  <button class="hero-next" onclick="heroSlide(1)" aria-label="Next slide">›</button>
-  <div class="hero-dots">
-    {% for i in 0..(hero_slides|length - 1) %}
-    <span class="hero-dot{% if i == 0 %} active{% endif %}" onclick="heroGoTo({{ i }})"></span>
-    {% endfor %}
-  </div>
-  {% endif %}
-</section>
-
-{# MAIN 3-COL GRID #}
-<main class="main-container" id="main-content">
-
-  {# COL 1: QUICK LINKS #}
-  <aside>
-    <div class="sec-title">
-      Quick Links
-      <a href="#">View All</a>
-    </div>
-    {% for link in quick_links %}
-    <a href="{{ link.link_url }}" class="ql-box">
-      <div class="ql-left">
-        <div class="ql-icon-wrap"><img src="{{ link.icon_url }}" alt="{{ link.title }}"></div>
-        <div class="ql-label">{{ link.title }}</div>
-      </div>
-      <span class="ql-arrow">›</span>
-    </a>
-    {% endfor %}
-    <div class="ql-btns">
-      <a href="#">Tenders</a>
-      <a href="#">Recruitment</a>
-    </div>
-  </aside>
-
-  {# COL 2: NEWS AND ANNOUNCEMENTS — dynamic from iihr_news content type #}
-  <section>
-    <div class="sec-title">
-      News and Announcements
-      <a href="#" style="display:flex;align-items:center;gap:4px">
-        View All
-        <span style="width:18px;height:18px;background:var(--green);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:11px">›</span>
-      </a>
-    </div>
-    {% if news_items %}
-      {% for item in news_items %}
-      <div class="news-item">
-        <div class="news-dot"></div>
-        <div class="news-text">
-          <a href="{{ item.url }}">{{ item.title }}</a>
-          <div class="news-date">{{ item.date }}</div>
-        </div>
-      </div>
-      {% endfor %}
-    {% else %}
-      <div class="news-item">
-        <div class="news-dot"></div>
-        <div class="news-text">
-          <a href="#">ICAR-IIHR celebrates the 77th Republic Day with fervour and patriotism.</a>
-          <div class="news-date">Jan 26th, 2026</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <div class="news-dot"></div>
-        <div class="news-text">
-          <a href="#">Farmers' Training Programme organized under DST–SCSP on 21 January 2026</a>
-          <div class="news-date">Jan 21, 2026</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <div class="news-dot"></div>
-        <div class="news-text">
-          <a href="#">ICAR-IIHR organizes a Trainers' Training Programme on Cultivation, Post Harvest Management, and Value Addition of Medicinal Plants</a>
-          <div class="news-date">Jan 15, 2026</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <div class="news-dot"></div>
-        <div class="news-text">
-          <a href="#">Walkathon for Swachhata organized by ICAR-IIHR</a>
-          <div class="news-date">Jan 2, 2026</div>
-        </div>
-      </div>
-      <div class="news-item">
-        <div class="news-dot"></div>
-        <div class="news-text">
-          <a href="#">Kisan Diwas (National Farmers' Day) Observed at ICAR–IIHR, Bengaluru</a>
-          <div class="news-date">Dec 12, 2025</div>
-        </div>
-      </div>
-    {% endif %}
-  </section>
-
-  {# COL 3: UPCOMING EVENTS + DIRECTOR — dynamic from iihr_event & iihr_director #}
-  <aside>
-    <div class="sec-title">
-      Upcoming Events
-      <a href="#" style="display:flex;align-items:center;gap:4px">
-        View All
-        <span style="width:18px;height:18px;background:var(--green);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:11px">›</span>
-      </a>
-    </div>
-
-    {% if events %}
-      {% for event in events %}
-      <div class="event-row">
-        <div class="event-date-box">
-          <div class="mo">{{ event.month }}</div>
-          <div class="da">{{ event.day }}</div>
-        </div>
-        <div class="event-info">
-          {% if event.category %}
-            <span class="cat cat-{{ event.category }}">{{ event.category_label }}</span>
-          {% endif %}
-          <div class="ti">
-            {% if event.url %}<a href="{{ event.url }}" style="color:inherit">{{ event.title }}</a>{% else %}{{ event.title }}{% endif %}
-          </div>
-        </div>
-      </div>
-      {% endfor %}
-    {% else %}
-      <div class="event-row">
-        <div class="event-date-box"><div class="mo">FEB</div><div class="da">04</div></div>
-        <div class="event-info">
-          <span class="cat cat-funding">Funding</span>
-          <div class="ti">SHITIJ - Startup Incubation programme</div>
-        </div>
-      </div>
-      <div class="event-row">
-        <div class="event-date-box"><div class="mo">FEB</div><div class="da">09</div></div>
-        <div class="event-info">
-          <span class="cat cat-training">Training</span>
-          <div class="ti">Hands on Training on Hybrid Seeds</div>
-        </div>
-      </div>
-    {% endif %}
-
-    {# DIRECTOR CARD — dynamic from iihr_director content type #}
-    <div class="director-card">
-      <img src="{{ director.image_url }}" class="director-img" alt="Director">
-      <div class="director-info">
-        <div class="dlabel">Director</div>
-        <div class="dname">{{ director.name }}</div>
-        <a href="{{ director.url }}" class="director-btn">Read Now</a>
-      </div>
-    </div>
-  </aside>
-</main>
-
-{# SPOTLIGHT GRID — dynamic from iihr_spotlight content type #}
-<div class="spotlight-grid">
-  <div class="grid-box intro-box">
-    <div class="sp-icon"><img src="https://img.icons8.com/ios-filled/50/ffffff/leaf.png" alt="" style="width:40px;height:40px"></div>
-    <h2>{{ site_config.spotlight_title ?: 'IIHR Spotlight' }}</h2>
-    <p>{{ site_config.spotlight_text ?: 'Our roots represent focused areas of expertise working towards a common vision.' }}</p>
-  </div>
-  {% for item in spotlight_items %}
-  <div class="grid-box image-box">
-    {% if item.image_url %}<img src="{{ item.image_url }}" alt="{{ item.title }}">{% endif %}
-    <div class="overlay{% if item.featured %} featured{% endif %}">
-      <h3>{{ item.title }}</h3>
-      {% if item.description %}<p>{{ item.description }}</p>{% endif %}
-      {% if item.featured %}<a href="{{ item.link_url }}" class="know-btn">Know More →</a>{% endif %}
+{# PAGE HERO BANNER — add page-hero--<key> class to change the background image #}
+<div class="page-hero page-hero--fruit-crops">
+  <div class="page-hero-text">
+    <h1>{{ division_content.page_title ?: 'Fruit Crops' }}</h1>
+    <div class="breadcrumb">
     </div>
   </div>
-  {% endfor %}
 </div>
 
-{# RESEARCH PROGRAMMES #}
-<section class="research-sec">
-  <div class="research-container">
-    <div class="research-gold-area">
-      <div class="research-circles">
-        {% for item in research_items %}
-        <div class="circle-item">
-          <div class="circle-img-wrap">
-            {% if item.image_url %}<img src="{{ item.image_url }}" alt="{{ item.title }}">{% endif %}
+{# DIVISION MAIN LAYOUT — sidebar + content — dynamic from iihr_division content type #}
+<div class="division-layout" id="main-content">
+
+  {# LEFT SIDEBAR #}
+  <aside class="div-sidebar">
+
+    {# Related Links Panel — driven from division_content.related_links #}
+    <div class="div-sidebar-panel">
+      <div class="div-sidebar-title">Related Links</div>
+      <a href="#" class="div-related-link active">About Fruit Division <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Varieties <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Technology <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Research Programmes <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Staffs <span class="div-link-arrow">›</span></a>
+    </div>
+
+    {# Division Head Card — driven from division_head variable #}
+    <div class="div-head-card">
+      <div class="div-head-card-title">
+        Division Head ( {{ division_content.page_title ?: 'Fruits Crops' }} )
+      </div>
+      <div class="div-head-card-body">
+        <img
+          src="{{ division_head.image_url ?: '/themes/custom/iihr_theme/images/dr.jpg' }}"
+          alt="{{ division_head.name ?: 'Division Head' }}"
+          class="div-head-photo"
+          onerror="this.src='/themes/custom/iihr_theme/images/dr.jpg'">
+        <div class="div-head-info">
+          <div class="div-head-name">{{ division_head.name ?: 'Dr. M. Sankaran' }}</div>
+          <div class="div-head-designation">{{ division_head.designation ?: 'Principal Scientist & Head' }}</div>
+          <div class="div-head-contact">
+            Email: {{ division_head.email ?: 'fruits[dot]iihr[at]icar[dot]gov[dot]in' }}<br>
+            Phone: {{ division_head.phone ?: '080-23086100 (Extn:297)' }}
           </div>
-          <div class="circle-title">{{ item.title }}</div>
+        </div>
+      </div>
+    </div>
+
+    {# Other Divisions Panel #}
+    <div class="div-sidebar-panel">
+      <div class="div-sidebar-title">Other Divisions</div>
+      <a href="#" class="div-related-link">Vegetable Crops <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Flower and Medicinal Crops <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Technology <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Crop Protection <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Basic Science <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Natural Resources <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">Social Sciences and Training <span class="div-link-arrow">›</span></a>
+      <a href="#" class="div-related-link">PHD and Agri Engg. <span class="div-link-arrow">›</span></a>
+    </div>
+
+  </aside>
+
+  {# MAIN DIVISION CONTENT — all text driven from iihr_division node in Drupal admin #}
+  <div class="div-content">
+
+    {# About Section #}
+    <h2 class="div-section-heading">About</h2>
+    <div class="div-about-text">
+      {{ division_content.about_text|raw }}
+    </div>
+
+    {# The Mandate — driven from division_mandates array #}
+    <h2 class="div-section-heading">{{ division_content.mandate_heading ?: 'The Mandate' }}</h2>
+    <div class="div-mandate-container">
+      <div class="div-mandate-grid">
+        {% for mandate in division_mandates %}
+        <div class="div-mandate-card">
+          <div class="div-mandate-icon">
+            <img src="{{ mandate.icon_url }}" alt="">
+          </div>
+          <p>{{ mandate.text }}</p>
         </div>
         {% endfor %}
       </div>
     </div>
-    <div class="research-text-side">
-      <h2>Research<br>Programmes</h2>
-      <div class="research-underline"></div>
-      <div class="research-nav">
-        <button>‹</button>
-        <button>›</button>
-      </div>
-    </div>
-  </div>
-</section>
 
-{# PARTNER LOGOS — dynamic from iihr_partner content type #}
+    {# Thrust Areas — driven from division_content.thrust_areas #}
+    <h2 class="div-section-heading">Thrust Areas</h2>
+    <ul class="div-thrust-list">
+      {% for area in division_content.thrust_areas %}
+        <li>{{ area }}</li>
+      {% endfor %}
+    </ul>
+
+    {# Field Gene Bank Stats — driven from division_genbank array #}
+    <h2 class="div-section-heading div-genbank-heading">
+      {{ division_content.genbank_heading ?: "Field Gene Bank' Collections at Present" }}
+      <span class="div-genbank-live-dot"></span>
+    </h2>
+    <div class="div-genbank-grid">
+      {% for item in division_genbank %}
+      <div class="div-genbank-box gb-{{ item.key }}">
+        <div class="div-genbank-num">{{ item.count }}</div>
+        <div class="div-genbank-label">{{ item.label }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {# Mother Plants Field Gene Bank #}
+    <h2 class="div-section-heading">Mother Plants Field Gene Bank</h2>
+    <p class="div-mother-bank-text">
+      {{ division_content.mother_bank_text ?: 'The Division maintains mother banks of all released varieties in an area about 20 acres for multiplication purpose.' }}
+    </p>
+
+    {# Project Buttons — driven from division_content.project_links #}
+    <div class="div-proj-btns">
+      <a href="#" class="div-proj-btn">
+        Institute Projects
+        <span class="div-proj-btn-icon">
+          <img src="https://img.icons8.com/ios-filled/50/ffffff/table.png" alt="">
+        </span>
+      </a>
+      <a href="#" class="div-proj-btn">
+        Externally Funded Project
+        <span class="div-proj-btn-icon">
+          <img src="https://img.icons8.com/ios-filled/50/ffffff/table.png" alt="">
+        </span>
+      </a>
+      <a href="#" class="div-proj-btn">
+        Varieties
+        <span class="div-proj-btn-icon">
+          <img src="https://img.icons8.com/ios-filled/50/ffffff/table.png" alt="">
+        </span>
+      </a>
+      <a href="#" class="div-proj-btn">
+        Technologies
+        <span class="div-proj-btn-icon">
+          <img src="https://img.icons8.com/ios-filled/50/ffffff/table.png" alt="">
+        </span>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+{# PARTNER LOGOS — driven from iihr_partner nodes #}
 <div class="partner-logos">
   <div class="partner-logos-inner">
     {% for logo in partner_logos %}
-    <img src="{{ logo.image_url }}" alt="{{ logo.name }}">
+      <img src="{{ logo.image_url }}" alt="{{ logo.name }}">
     {% endfor %}
   </div>
 </div>
 
-{# FOOTER #}
-<footer class="footer">
+{# FOOTER — same as home/about #}
+<footer class="footer" role="contentinfo">
   <div class="footer-grid">
-
     <div class="footer-col">
       <div class="footer-logo">
         <img src="/themes/custom/iihr_theme/images/logo.png" alt="IIHR" onerror="this.style.display='none'">
       </div>
       <p style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);margin-bottom:8px">Contact Information</p>
-      <p style="font-size:12px;color:rgba(255,255,255,0.72);line-height:1.6;margin-bottom:4px">ICAR - IIHR<br>{{ site_config.address }}</p>
-      <a href="#" style="color:var(--gold-light);font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;margin-bottom:8px"><img src="https://img.icons8.com/ios-filled/16/ffffff/marker.png" alt="" style="width:14px;height:14px"> View in Maps</a>
-      <p style="font-size:12px;color:rgba(255,255,255,0.72);margin-bottom:4px"><img src="https://img.icons8.com/ios-filled/16/ffffff/phone.png" alt="" style="width:14px;height:14px;display:inline;vertical-align:middle"> {{ site_config.phone }}</p>
-      <p style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:12px">{{ site_config.email }}</p>
+      <p class="footer-addr">ICAR - IIHR<br>Hessaraghatta Lake Post,<br>Bengaluru-560 089</p>
+      <a href="#" style="color:var(--gold-light);font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;margin-bottom:8px">
+        <img src="https://img.icons8.com/ios-filled/16/ffffff/marker.png" alt="" style="width:14px;height:14px"> View in Maps
+      </a>
+      <p style="font-size:12px;color:rgba(255,255,255,0.72);margin-bottom:4px">
+        <img src="https://img.icons8.com/ios-filled/16/ffffff/phone.png" alt="" style="width:14px;height:14px;display:inline;vertical-align:middle">
+        {{ site_config.phone ?: '(080) 23086100' }}
+      </p>
+      <p style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:12px">{{ site_config.email ?: 'iihrdirector[at]gmail[dot]com' }}</p>
       <div class="footer-socials">
         <a href="#"><img src="https://img.icons8.com/color/48/facebook-new.png" alt="FB"></a>
         <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/twitterx.png" alt="TW"></a>
@@ -407,10 +345,7 @@
       <div class="footer-socials">
         <p>{{ site_config.ministry_text }}</p>
       </div>
-      <a href="#" class="feedback-btn">
-        
-        Give Feedback
-      </a>
+      <a href="#" class="feedback-btn">Give Feedback</a>
     </div>
 
     <div class="footer-col">
@@ -487,9 +422,8 @@
   <div style="max-width:1200px;margin:30px auto 0;padding:15px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:rgba(255,255,255,0.45);text-align:center;line-height:1.8">
     This website belongs to Indian Institute of Horticultural Research, Indian Council of Agricultural Research, an autonomous organization under the Department of Agricultural Research and Education, Ministry of Agriculture &amp; Farmers Welfare, Government of India.
   </div>
-
   <div class="footer-bottom">
-    <span>{{ site_config.copyright ?: 'Copyright © 2026 ICAR-IIHR, Maintained by Agricultural Knowledge Management Unit' }}</span>
+    <span>{{ site_config.copyright ?: 'Copyright © 2026 ICAR-IIHR, This site is Maintained by Agricultural Knowledge Management Unit' }}</span>
     <div class="footer-bottom-links">
       <a href="#">Privacy Policy</a><span>|</span>
       <a href="#">Cookies Policy</a><span>|</span>

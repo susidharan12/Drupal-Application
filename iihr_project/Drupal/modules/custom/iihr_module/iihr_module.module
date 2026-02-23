@@ -23,8 +23,23 @@ function iihr_module_theme($existing, $type, $theme, $path) {
     'iihr_about' => [
       'template'  => 'iihr-about',
       'variables' => [
-        'ticker_items' => [],
-        'site_config'  => [],
+        'ticker_items'  => [],
+        'site_config'   => [],
+        'about_content' => [],  // intro, history, core, mandate heading, award text, campus image
+        'mandate_items' => [],  // [['icon_url', 'text'], ...]
+        'partner_logos' => [],  // [['name', 'image_url'], ...]
+      ],
+    ],
+    'iihr_division' => [
+      'template'  => 'iihr-division',
+      'variables' => [
+        'ticker_items'      => [],  // ['message1', ...]
+        'site_config'       => [],  // header titles, address, phone, email
+        'division_content'  => [],  // page_title, about_text, mandate_heading, thrust_areas, genbank_heading, mother_bank_text
+        'division_mandates' => [],  // [['icon_url', 'text'], ...]
+        'division_genbank'  => [],  // [['key', 'count', 'label'], ...]
+        'division_head'     => [],  // ['name', 'designation', 'email', 'phone', 'image_url']
+        'partner_logos'     => [],  // [['name', 'image_url'], ...]
       ],
     ],
   ];

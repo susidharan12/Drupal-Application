@@ -13,3 +13,11 @@ iihr_module.about:
     _title: 'About IIHR'
   requirements:
     _access: 'TRUE'
+
+iihr_module.division_fruit_crops:
+  path: '/division/fruit-crops'
+  defaults:
+    _controller: '\Drupal\iihr_module\Controller\IihrController::divisionFruitCrops'
+    _title: 'Fruit Crops Division'
+  requirements:
+    _access: 'TRUE'

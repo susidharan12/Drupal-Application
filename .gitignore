@@ -1,0 +1,11 @@
+# Ignore README
+README.md
+
+# Ignore Dockerfile
+Dockerfile
+
+# Ignore claude folder
+.claude/
+
+# Ignore docker-compose
+docker-compose.yml

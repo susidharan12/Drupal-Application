@@ -36,10 +36,39 @@ function iihr_module_install() {
   _iihr_create_spotlight_type();
   _iihr_create_research_prog_type();
   _iihr_create_partner_type();
+  _iihr_create_about_content_type();
+  _iihr_create_mandate_type();
+  _iihr_create_division_type();
+  _iihr_create_division_mandate_type();
+  _iihr_create_division_head_type();
+  _iihr_create_genbank_type();
 
   \Drupal::messenger()->addMessage(
-    t('IIHR: All 10 content types created. Visit /admin/content to start adding content.')
+    t('IIHR: All 16 content types created. Visit /admin/content to start adding content.')
   );
+}
+
+/**
+ * Add About page content types (iihr_about_content + iihr_mandate).
+ * Run this if the module was already installed before these types existed.
+ */
+function iihr_module_update_8001() {
+  _iihr_create_about_content_type();
+  _iihr_create_mandate_type();
+  return t('IIHR: Created iihr_about_content and iihr_mandate content types.');
+}
+
+/**
+ * Add Division page content types (iihr_division, iihr_division_mandate,
+ * iihr_division_head, iihr_genbank).
+ * Run this if the module was already installed before these types existed.
+ */
+function iihr_module_update_8002() {
+  _iihr_create_division_type();
+  _iihr_create_division_mandate_type();
+  _iihr_create_division_head_type();
+  _iihr_create_genbank_type();
+  return t('IIHR: Created 4 Division content types (iihr_division, iihr_division_mandate, iihr_division_head, iihr_genbank).');
 }
 
 function iihr_module_uninstall() {
@@ -340,5 +369,159 @@ function _iihr_create_partner_type() {
   _iihr_form_display('iihr_partner', [
     ['name' => 'field_partner_logo',   'widget' => 'image_image'],
     ['name' => 'field_partner_weight', 'widget' => 'number'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   11. iihr_about_content — About page text sections (one node only)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_about_content_type() {
+  _iihr_node_type('iihr_about_content', 'IIHR About Page Content',
+    'ONE node only. Controls all text sections on the About Us page (intro, history, core, mandate heading, award note, campus image).');
+
+  _iihr_field('iihr_about_content', 'field_ac_intro_heading',   'string',    'Intro Section Heading',
+    ['max_length' => 255]);
+  _iihr_field('iihr_about_content', 'field_ac_intro_text',      'text_long', 'Introduction Body Text (HTML allowed)');
+  _iihr_field('iihr_about_content', 'field_ac_intro_image',     'image',     'Campus / Intro Image', [],
+    ['file_extensions' => 'jpg jpeg png webp', 'alt_field' => TRUE, 'alt_field_required' => FALSE, 'title_field' => FALSE]);
+  _iihr_field('iihr_about_content', 'field_ac_history_text',    'text_long', 'History and Growth Body Text (HTML allowed)');
+  _iihr_field('iihr_about_content', 'field_ac_core_text',       'text_long', 'Core of IIHR Body Text (HTML allowed)');
+  _iihr_field('iihr_about_content', 'field_ac_mandate_heading', 'string',    'Mandate Section Heading',
+    ['max_length' => 100]);
+  _iihr_field('iihr_about_content', 'field_ac_award_text',      'string_long', 'Award / Recognition Note (shown in italic at bottom)');
+
+  _iihr_form_display('iihr_about_content', [
+    ['name' => 'field_ac_intro_heading',   'widget' => 'string_textfield'],
+    ['name' => 'field_ac_intro_text',      'widget' => 'text_textarea'],
+    ['name' => 'field_ac_intro_image',     'widget' => 'image_image'],
+    ['name' => 'field_ac_history_text',    'widget' => 'text_textarea'],
+    ['name' => 'field_ac_core_text',       'widget' => 'text_textarea'],
+    ['name' => 'field_ac_mandate_heading', 'widget' => 'string_textfield'],
+    ['name' => 'field_ac_award_text',      'widget' => 'string_textarea'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   12. iihr_mandate — Individual mandate cards (icon + paragraph)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_mandate_type() {
+  _iihr_node_type('iihr_mandate', 'IIHR Mandate Card',
+    'One card in the "The Mandate" grid on the About page. Title = admin label. Set icon URL, card text, and sort order.');
+
+  _iihr_field('iihr_mandate', 'field_mandate_icon_url', 'string',      'Icon Image URL (icons8)',
+    ['max_length' => 500]);
+  _iihr_field('iihr_mandate', 'field_mandate_text',     'string_long', 'Card Paragraph Text');
+  _iihr_field('iihr_mandate', 'field_mandate_weight',   'integer',     'Sort Order (lower = first)');
+
+  _iihr_form_display('iihr_mandate', [
+    ['name' => 'field_mandate_icon_url', 'widget' => 'string_textfield'],
+    ['name' => 'field_mandate_text',     'widget' => 'string_textarea'],
+    ['name' => 'field_mandate_weight',   'widget' => 'number'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   13. iihr_division — Division page main content (one node per division)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_division_type() {
+  _iihr_node_type('iihr_division', 'IIHR Division',
+    'One node per division (e.g. Fruit Crops). Title = page heading. Set machine name to match the route key (fruit_crops, vegetable_crops, etc.).');
+
+  _iihr_field('iihr_division', 'field_div_machine_name',    'string',    'Machine Name (route key)',
+    ['max_length' => 100]);
+  _iihr_field('iihr_division', 'field_div_about_text',      'text_long', 'About Section Text (HTML allowed)');
+  _iihr_field('iihr_division', 'field_div_mandate_heading', 'string',    'Mandate Section Heading',
+    ['max_length' => 255]);
+  _iihr_field('iihr_division', 'field_div_thrust_areas',    'text_long', 'Thrust Areas (one item per line)');
+  _iihr_field('iihr_division', 'field_div_genbank_heading', 'string',    'Gene Bank Section Heading',
+    ['max_length' => 255]);
+  _iihr_field('iihr_division', 'field_div_mother_bank',     'string_long', 'Mother Plants Gene Bank Text');
+
+  _iihr_form_display('iihr_division', [
+    ['name' => 'field_div_machine_name',    'widget' => 'string_textfield'],
+    ['name' => 'field_div_about_text',      'widget' => 'text_textarea'],
+    ['name' => 'field_div_mandate_heading', 'widget' => 'string_textfield'],
+    ['name' => 'field_div_thrust_areas',    'widget' => 'text_textarea'],
+    ['name' => 'field_div_genbank_heading', 'widget' => 'string_textfield'],
+    ['name' => 'field_div_mother_bank',     'widget' => 'string_textarea'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   14. iihr_division_mandate — Mandate cards specific to a division (3 cards)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_division_mandate_type() {
+  _iihr_node_type('iihr_division_mandate', 'IIHR Division Mandate Card',
+    'One of the 3 mandate cards on a Division page. Title = admin label. Set field_div_key to match the division machine name (e.g. fruit_crops).');
+
+  // Reuse shared field storages already created by iihr_mandate if they exist
+  _iihr_field('iihr_division_mandate', 'field_div_key',          'string',      'Division Key (e.g. fruit_crops)',
+    ['max_length' => 100]);
+  _iihr_field('iihr_division_mandate', 'field_mandate_icon_url', 'string',      'Icon Image URL (icons8)',
+    ['max_length' => 500]);
+  _iihr_field('iihr_division_mandate', 'field_mandate_text',     'string_long', 'Card Paragraph Text');
+  _iihr_field('iihr_division_mandate', 'field_mandate_weight',   'integer',     'Sort Order (lower = first)');
+
+  _iihr_form_display('iihr_division_mandate', [
+    ['name' => 'field_div_key',          'widget' => 'string_textfield'],
+    ['name' => 'field_mandate_icon_url', 'widget' => 'string_textfield'],
+    ['name' => 'field_mandate_text',     'widget' => 'string_textarea'],
+    ['name' => 'field_mandate_weight',   'widget' => 'number'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   15. iihr_division_head — Division Head scientist card
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_division_head_type() {
+  _iihr_node_type('iihr_division_head', 'IIHR Division Head',
+    'Scientist in charge of a division. Title = full name. Set field_div_key to the division machine name (e.g. fruit_crops).');
+
+  _iihr_field('iihr_division_head', 'field_div_key',        'string',  'Division Key (e.g. fruit_crops)',
+    ['max_length' => 100]);
+  _iihr_field('iihr_division_head', 'field_dh_designation', 'string',  'Designation / Title',
+    ['max_length' => 255]);
+  _iihr_field('iihr_division_head', 'field_dh_email',       'string',  'Email Address',
+    ['max_length' => 255]);
+  _iihr_field('iihr_division_head', 'field_dh_phone',       'string',  'Phone / Extension',
+    ['max_length' => 100]);
+  _iihr_field('iihr_division_head', 'field_dh_photo',       'image',   'Headshot Photo', [],
+    ['file_extensions' => 'jpg jpeg png webp', 'alt_field' => TRUE, 'alt_field_required' => FALSE, 'title_field' => FALSE]);
+
+  _iihr_form_display('iihr_division_head', [
+    ['name' => 'field_div_key',        'widget' => 'string_textfield'],
+    ['name' => 'field_dh_designation', 'widget' => 'string_textfield'],
+    ['name' => 'field_dh_email',       'widget' => 'string_textfield'],
+    ['name' => 'field_dh_phone',       'widget' => 'string_textfield'],
+    ['name' => 'field_dh_photo',       'widget' => 'image_image'],
+  ]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   16. iihr_genbank — Field Gene Bank collection stat boxes
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function _iihr_create_genbank_type() {
+  _iihr_node_type('iihr_genbank', 'IIHR Gene Bank Stat',
+    'One coloured stat box in the "Field Gene Bank Collections" row on a Division page. Title = crop label (e.g. Mango). Set the CSS key to match the colour class (mango, pomegranate, grapes, jackfruit, dragon).');
+
+  _iihr_field('iihr_genbank', 'field_div_key',    'string',  'Division Key (e.g. fruit_crops)',
+    ['max_length' => 100]);
+  _iihr_field('iihr_genbank', 'field_gb_css_key', 'string',  'CSS Colour Key (mango / pomegranate / grapes / jackfruit / dragon)',
+    ['max_length' => 50]);
+  _iihr_field('iihr_genbank', 'field_gb_count',   'string',  'Collection Count (number to display)',
+    ['max_length' => 20]);
+  _iihr_field('iihr_genbank', 'field_gb_weight',  'integer', 'Sort Order (lower = first, left to right)');
+
+  _iihr_form_display('iihr_genbank', [
+    ['name' => 'field_div_key',    'widget' => 'string_textfield'],
+    ['name' => 'field_gb_css_key', 'widget' => 'string_textfield'],
+    ['name' => 'field_gb_count',   'widget' => 'string_textfield'],
+    ['name' => 'field_gb_weight',  'widget' => 'number'],
   ]);
 }

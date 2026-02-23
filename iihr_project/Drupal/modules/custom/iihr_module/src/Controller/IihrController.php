@@ -30,10 +30,27 @@ class IihrController extends ControllerBase {
 
   public function about(Request $request) {
     return [
-      '#theme'        => 'iihr_about',
-      '#ticker_items' => $this->getTickerItems(),
-      '#site_config'  => $this->getSiteConfig(),
-      '#cache'        => ['max-age' => 0],
+      '#theme'          => 'iihr_about',
+      '#ticker_items'   => $this->getTickerItems(),
+      '#site_config'    => $this->getSiteConfig(),
+      '#about_content'  => $this->getAboutContent(),
+      '#mandate_items'  => $this->getMandateItems(),
+      '#partner_logos'  => $this->getPartnerLogos(),
+      '#cache'          => ['max-age' => 0],
+    ];
+  }
+
+  public function divisionFruitCrops(Request $request) {
+    return [
+      '#theme'            => 'iihr_division',
+      '#ticker_items'     => $this->getTickerItems(),
+      '#site_config'      => $this->getSiteConfig(),
+      '#division_content' => $this->getDivisionContent('fruit_crops'),
+      '#division_mandates'=> $this->getDivisionMandates('fruit_crops'),
+      '#division_genbank' => $this->getDivisionGeneBank('fruit_crops'),
+      '#division_head'    => $this->getDivisionHead('fruit_crops'),
+      '#partner_logos'    => $this->getPartnerLogos(),
+      '#cache'            => ['max-age' => 0],
     ];
   }
 
@@ -74,8 +91,8 @@ class IihrController extends ControllerBase {
 
     // Defaults (shown before admin creates the Site Configuration node)
     return [
-      'kannada_title'   => 'ಭಾ.ಕೃ.ಅ.ಪ - ಭಾರತೀಯ ತೋಟಗಾರಿಕೆ ಸಂಶೋಧನಾ ಸಂಸ್ಥೆ | आई.सी.ए.आर - भारतीय बागवानी अनुसंधान संस्थान',
-      'hindi_title'     => '',
+      'kannada_title'   => 'ಭಾ.ಕೃ.ಅ.ಪ - ಭಾರತೀಯ ತೋಟಗಾರಿಕೆ ಸಂಶೋಧನಾ ಸಂಸ್ಥೆ',
+      'hindi_title'     => 'आई.सी.ए.आर - भारतीय बागवानी अनुसंधान संस्थान',
       'english_title'   => 'ICAR - Indian Institute of Horticulture Research',
       'address'         => 'Hesaraghatta Lake Post, Bengaluru-560 089',
       'phone'           => '(080) 23086100',
@@ -383,6 +400,277 @@ class IihrController extends ControllerBase {
     catch (\Exception $e) {
       return $fallback;
     }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     ABOUT PAGE CONTENT — intro, history, core, award note
+     ───────────────────────────────────────────────────────────────────────── */
+
+  private function getAboutContent(): array {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nids = $storage->getQuery()
+      ->condition('type', 'iihr_about_content')
+      ->condition('status', 1)
+      ->range(0, 1)
+      ->accessCheck(FALSE)
+      ->execute();
+
+    if (!empty($nids)) {
+      $node = reset($storage->loadMultiple($nids));
+      return [
+        'intro_heading'   => $this->fieldVal($node, 'field_ac_intro_heading', 'Introduction to IIHR'),
+        'intro_text'      => $this->fieldVal($node, 'field_ac_intro_text',
+          '<p>The Institute spread its sphere of Research activities to the length and breadth of the Nation by establishing its experimental stations at Lucknow, Nagpur, Ranchi, Godhra, Chettalli and Gonikopal. Over the years these experiment stations have grown in size and today they stand as independent institutes, however, retaining the Chettalli and Gonicoppal under its fold.</p><p>As of now, the IIHR has its main research station at Hessaraghatta, Bengaluru with 263 ha of land and Regional experiment station at Bhuvaneshwar in Orissa with two Krishi Vigyan Kendras both located in Karnataka state at Gonikopal in Kodagu and Hirehalli in Tumkur districts.</p>'),
+        'intro_image'     => $this->imageUrl($node, 'field_ac_intro_image',
+          '/themes/custom/iihr_theme/images/iihr.jpg'),
+        'history_text'    => $this->fieldVal($node, 'field_ac_history_text',
+          '<p>The physical growth of the Institute could be viewed in two phases. The first phase is from 1970 to 1990, wherein emphases were laid on land development and buildings. During this phase, the area for carrying out research and the area for laboratory buildings, supporting buildings and other essential office buildings was earmarked. Accordingly, the entire arable land was divided into well-defined nine blocks for carrying out research and independent buildings for various divisions and departments with laboratories were built.</p><p>The second phase of the physical growth was after 1990 during which emphases was laid on creating ultra-modern world class infrastructure facilities in terms of equipment and structures. Currently the institute has well defined 8 divisions namely, The Division of Fruit Crops, Division of Vegetable Crops, Division of Flower and Medicinal Crops, Division of Post Harvest Technology and Agricultural Engineering, Division of Crop Protection, Division of Natural Resources, Division of Basic Sciences and Division of Social Sciences and Training with more than 65 purpose oriented laboratories having state of art equipment like electron microscope, ultra-centrifuge, LC-MS, GC-MS, GC-EAD, AAS, ICP-OES, SEM, TEM, HPLC, GLC, FT-NIR, Gama Chamber etc.</p>'),
+        'core_text'       => $this->fieldVal($node, 'field_ac_core_text',
+          '<p>The Institute has also an Agriculture Technology Information Centre (ATIC), which is a single window agency for dissemination of information and technologies developed by the Institute. All the technological products and popular publications developed by the Institute are sold to the farmers and interested public through the agricultural technology information centre.</p><p>The main strength of the institute is excellent well-trained human resources. Presently the Institute has a total cadre strength of 714 staff with 150 Scientists, 226 technical staff, 83 Administrative staff and 145 supporting staff.</p>'),
+        'mandate_heading' => $this->fieldVal($node, 'field_ac_mandate_heading', 'The Mandate'),
+        'award_text'      => $this->fieldVal($node, 'field_ac_award_text',
+          'Twice, i.e. during the year 1999 and 2011, the Indian Council of Agricultural Research, New Delhi awarded the Best Institute Award to IIHR, Bangalore in recognition of institute\'s progress, achievements, and its contribution to the field of horticulture.'),
+      ];
+    }
+
+    // Defaults (shown before admin creates the About Page Content node)
+    return [
+      'intro_heading'   => 'Introduction to IIHR',
+      'intro_text'      => '<p>The Institute spread its sphere of Research activities to the length and breadth of the Nation by establishing its experimental stations at Lucknow, Nagpur, Ranchi, Godhra, Chettalli and Gonikopal. Over the years these experiment stations have grown in size and today they stand as independent institutes, however, retaining the Chettalli and Gonicoppal under its fold.</p><p>As of now, the IIHR has its main research station at Hessaraghatta, Bengaluru with 263 ha of land and Regional experiment station at Bhuvaneshwar in Orissa with two Krishi Vigyan Kendras both located in Karnataka state at Gonikopal in Kodagu and Hirehalli in Tumkur districts.</p>',
+      'intro_image'     => '/themes/custom/iihr_theme/images/iihr.jpg',
+      'history_text'    => '<p>The physical growth of the Institute could be viewed in two phases. The first phase is from 1970 to 1990, wherein emphases were laid on land development and buildings. During this phase, the area for carrying out research and the area for laboratory buildings, supporting buildings and other essential office buildings was earmarked. Accordingly, the entire arable land was divided into well-defined nine blocks for carrying out research and independent buildings for various divisions and departments with laboratories were built.</p><p>The second phase of the physical growth was after 1990 during which emphases was laid on creating ultra-modern world class infrastructure facilities in terms of equipment and structures. Currently the institute has well defined 8 divisions namely, The Division of Fruit Crops, Division of Vegetable Crops, Division of Flower and Medicinal Crops, Division of Post Harvest Technology and Agricultural Engineering, Division of Crop Protection, Division of Natural Resources, Division of Basic Sciences and Division of Social Sciences and Training with more than 65 purpose oriented laboratories having state of art equipment like electron microscope, ultra-centrifuge, LC-MS, GC-MS, GC-EAD, AAS, ICP-OES, SEM, TEM, HPLC, GLC, FT-NIR, Gama Chamber etc.</p>',
+      'core_text'       => '<p>The Institute has also an Agriculture Technology Information Centre (ATIC), which is a single window agency for dissemination of information and technologies developed by the Institute. All the technological products and popular publications developed by the Institute are sold to the farmers and interested public through the agricultural technology information centre.</p><p>The main strength of the institute is excellent well-trained human resources. Presently the Institute has a total cadre strength of 714 staff with 150 Scientists, 226 technical staff, 83 Administrative staff and 145 supporting staff.</p>',
+      'mandate_heading' => 'The Mandate',
+      'award_text'      => 'Twice, i.e. during the year 1999 and 2011, the Indian Council of Agricultural Research, New Delhi awarded the Best Institute Award to IIHR, Bangalore in recognition of institute\'s progress, achievements, and its contribution to the field of horticulture.',
+    ];
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     MANDATE CARDS — individual cards in "The Mandate" grid
+     ───────────────────────────────────────────────────────────────────────── */
+
+  private function getMandateItems(): array {
+    $fallback = [
+      ['icon_url' => 'https://img.icons8.com/ios-filled/40/000000/microscope.png',    'text' => 'To Undertake Basic And Applied Research For Developing Strategies To Enhance Productivity And Utilization Of Tropical And Sub-Tropical Horticulture Crops Viz., Fruits, Vegetables, Ornamentals, Medicinal And Aromatic Plants And Mushrooms.'],
+      ['icon_url' => 'https://img.icons8.com/ios-filled/40/000000/book.png',           'text' => 'To Serve As A Repository Of Scientific Information Relevant To Horticulture.'],
+      ['icon_url' => 'https://img.icons8.com/ios-filled/40/000000/graduation-cap.png', 'text' => 'To Act As A Centre For Training For Up Gradation Of Scientific Manpower In Modern Technologies For Horticulture Production.'],
+      ['icon_url' => 'https://img.icons8.com/ios-filled/40/000000/handshake.png',      'text' => 'To Collaborate With National And International Agencies In Achieving The Above Objectives.'],
+    ];
+    try {
+      $storage = \Drupal::entityTypeManager()->getStorage('node');
+      $nids = $storage->getQuery()
+        ->condition('type', 'iihr_mandate')
+        ->condition('status', 1)
+        ->sort('field_mandate_weight', 'ASC')
+        ->sort('created', 'ASC')
+        ->range(0, 8)
+        ->accessCheck(FALSE)
+        ->execute();
+
+      $items = [];
+      foreach ($storage->loadMultiple($nids) as $node) {
+        $items[] = [
+          'icon_url' => $this->fieldVal($node, 'field_mandate_icon_url',
+            'https://img.icons8.com/ios-filled/40/000000/star.png'),
+          'text'     => $this->fieldVal($node, 'field_mandate_text', ''),
+        ];
+      }
+      return empty($items) ? $fallback : $items;
+    }
+    catch (\Exception $e) {
+      return $fallback;
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     DIVISION PAGE — Fruit Crops (and future divisions)
+     ───────────────────────────────────────────────────────────────────────── */
+
+  /**
+   * Division main content block.
+   * Tries content type iihr_division (field_div_machine_name = $key),
+   * falls back to hardcoded defaults matching the PDF.
+   */
+  private function getDivisionContent(string $key): array {
+    $defaults = [
+      'fruit_crops' => [
+        'page_title'      => 'Fruit Crops',
+        'about_text'      => '<p>The Division of fruit crops was started in 1968 to cater the research and development needs in tropical and subtropical fruits at national level. This division is mainly working on the genetic improvement, development and refinement of fruit crops. This division is also offering courses on breeding of fruit crops and national problems in fruit crops to the Post Graduate students of Fruit Science.</p>',
+        'mandate_heading' => 'The Mandate',
+        'thrust_areas'    => [
+          'Breeding for yield, quality, and biotic and abiotic stresses.',
+          'High density planting (HDP), Canopy management, Crop regulation and Stock-Scion interaction in tropical fruits.',
+          'Fruit crop based farming systems',
+          'Intercropping in pre-bearing fruit crop based orchard systems.',
+        ],
+        'genbank_heading'    => "Field Gene Bank' Collections at Present",
+        'mother_bank_text'   => 'The Division maintains mother banks of all released varieties in an area about 20 acres for multiplication purpose.',
+      ],
+    ];
+
+    try {
+      $storage = \Drupal::entityTypeManager()->getStorage('node');
+      $nids = $storage->getQuery()
+        ->condition('type', 'iihr_division')
+        ->condition('status', 1)
+        ->condition('field_div_machine_name', $key)
+        ->range(0, 1)
+        ->accessCheck(FALSE)
+        ->execute();
+
+      if (!empty($nids)) {
+        $node = reset($storage->loadMultiple($nids));
+        $thrust_raw = $this->fieldVal($node, 'field_div_thrust_areas', '');
+        $thrust_arr = array_filter(array_map('trim', explode("\n", $thrust_raw)));
+        return [
+          'page_title'      => $node->getTitle(),
+          'about_text'      => $this->fieldVal($node, 'field_div_about_text', $defaults[$key]['about_text']),
+          'mandate_heading' => $this->fieldVal($node, 'field_div_mandate_heading', 'The Mandate'),
+          'thrust_areas'    => !empty($thrust_arr) ? $thrust_arr : $defaults[$key]['thrust_areas'],
+          'genbank_heading' => $this->fieldVal($node, 'field_div_genbank_heading', $defaults[$key]['genbank_heading']),
+          'mother_bank_text'=> $this->fieldVal($node, 'field_div_mother_bank', $defaults[$key]['mother_bank_text']),
+        ];
+      }
+    }
+    catch (\Exception $e) {
+      // fall through to defaults
+    }
+
+    return $defaults[$key] ?? $defaults['fruit_crops'];
+  }
+
+  /**
+   * Division mandate cards (3 icons + text).
+   * Tries iihr_division_mandate nodes filtered by field_div_key,
+   * falls back to PDF defaults.
+   */
+  private function getDivisionMandates(string $key): array {
+    $defaults = [
+      'fruit_crops' => [
+        [
+          'icon_url' => 'https://img.icons8.com/ios-filled/50/ffffff/microscope.png',
+          'text'     => 'To carry out the basic, strategic and applied research for higher productivity, quality and utility of fruit crops in tropical agro-climatic zones of India.',
+        ],
+        [
+          'icon_url' => 'https://img.icons8.com/ios-filled/50/ffffff/dna-helix.png',
+          'text'     => 'To be the National Active Germplasm Sites (NAGS) for major fruit crops and their effective management.',
+        ],
+        [
+          'icon_url' => 'https://img.icons8.com/ios-filled/50/ffffff/graduation-cap.png',
+          'text'     => 'To conduct teaching and training programmes for development of human resources.',
+        ],
+      ],
+    ];
+
+    try {
+      $storage = \Drupal::entityTypeManager()->getStorage('node');
+      $nids = $storage->getQuery()
+        ->condition('type', 'iihr_division_mandate')
+        ->condition('status', 1)
+        ->condition('field_div_key', $key)
+        ->sort('field_mandate_weight', 'ASC')
+        ->range(0, 6)
+        ->accessCheck(FALSE)
+        ->execute();
+
+      $items = [];
+      foreach ($storage->loadMultiple($nids) as $node) {
+        $items[] = [
+          'icon_url' => $this->fieldVal($node, 'field_mandate_icon_url',
+            'https://img.icons8.com/ios-filled/50/ffffff/star.png'),
+          'text'     => $this->fieldVal($node, 'field_mandate_text', ''),
+        ];
+      }
+      return !empty($items) ? $items : ($defaults[$key] ?? $defaults['fruit_crops']);
+    }
+    catch (\Exception $e) {
+      return $defaults[$key] ?? $defaults['fruit_crops'];
+    }
+  }
+
+  /**
+   * Field Gene Bank collection stats.
+   * Tries iihr_division_genbank nodes, falls back to PDF numbers.
+   */
+  private function getDivisionGeneBank(string $key): array {
+    $defaults = [
+      'fruit_crops' => [
+        ['key' => 'mango',       'count' => '767', 'label' => 'Mango'],
+        ['key' => 'pomegranate', 'count' => '265', 'label' => 'Pomegranate'],
+        ['key' => 'grapes',      'count' => '20',  'label' => 'Grapes'],
+        ['key' => 'jackfruit',   'count' => '171', 'label' => 'Jackfruit'],
+        ['key' => 'dragon',      'count' => '6',   'label' => 'Dragon Fruit'],
+      ],
+    ];
+
+    try {
+      $storage = \Drupal::entityTypeManager()->getStorage('node');
+      $nids = $storage->getQuery()
+        ->condition('type', 'iihr_genbank')
+        ->condition('status', 1)
+        ->condition('field_div_key', $key)
+        ->sort('field_gb_weight', 'ASC')
+        ->range(0, 10)
+        ->accessCheck(FALSE)
+        ->execute();
+
+      $items = [];
+      foreach ($storage->loadMultiple($nids) as $node) {
+        $items[] = [
+          'key'   => $this->fieldVal($node, 'field_gb_css_key', 'mango'),
+          'count' => $this->fieldVal($node, 'field_gb_count', '0'),
+          'label' => $node->getTitle(),
+        ];
+      }
+      return !empty($items) ? $items : ($defaults[$key] ?? $defaults['fruit_crops']);
+    }
+    catch (\Exception $e) {
+      return $defaults[$key] ?? $defaults['fruit_crops'];
+    }
+  }
+
+  /**
+   * Division head (scientist in charge).
+   * Tries iihr_division_head node, falls back to PDF data.
+   */
+  private function getDivisionHead(string $key): array {
+    $defaults = [
+      'fruit_crops' => [
+        'name'        => 'Dr. M. Sankaran',
+        'designation' => 'Principal Scientist & Head',
+        'email'       => 'fruits[dot]iihr[at]icar[dot]gov[dot]in',
+        'phone'       => '080-23086100 (Extn:297)',
+        'image_url'   => '/themes/custom/iihr_theme/images/dr.jpg',
+      ],
+    ];
+
+    try {
+      $storage = \Drupal::entityTypeManager()->getStorage('node');
+      $nids = $storage->getQuery()
+        ->condition('type', 'iihr_division_head')
+        ->condition('status', 1)
+        ->condition('field_div_key', $key)
+        ->range(0, 1)
+        ->accessCheck(FALSE)
+        ->execute();
+
+      if (!empty($nids)) {
+        $node = reset($storage->loadMultiple($nids));
+        return [
+          'name'        => $node->getTitle(),
+          'designation' => $this->fieldVal($node, 'field_dh_designation', 'Principal Scientist & Head'),
+          'email'       => $this->fieldVal($node, 'field_dh_email', ''),
+          'phone'       => $this->fieldVal($node, 'field_dh_phone', ''),
+          'image_url'   => $this->imageUrl($node, 'field_dh_photo',
+            '/themes/custom/iihr_theme/images/dr.jpg'),
+        ];
+      }
+    }
+    catch (\Exception $e) {
+      // fall through
+    }
+
+    return $defaults[$key] ?? $defaults['fruit_crops'];
   }
 
   /* ─────────────────────────────────────────────────────────────────────────
